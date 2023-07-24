@@ -1,3 +1,4 @@
+'''Create a graph from results of multiple choice quiz.'''
 import csv
 import datetime
 
@@ -36,5 +37,5 @@ for i in range(len(ns)):
 
 fig, ax = plt.subplots()
 ax.plot(xs,ys)
-#ax.scatter(dist3,period2),
+#ax.scatter(dist3,period2)
 plt.show()

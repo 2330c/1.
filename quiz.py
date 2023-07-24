@@ -1,3 +1,4 @@
+'''Multiple choice quiz with matching parts of speech in question and answer.'''
 from words2 import glossary
 
 import random
