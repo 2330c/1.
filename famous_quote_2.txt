@@ -1,0 +1,4 @@
+famous_person = "Socrates"
+quotation = "The only thing I know is that I know nothing."
+message = famous_person + ' once said, ' + quotation +'"'
+print(message)

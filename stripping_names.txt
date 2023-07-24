@@ -1,0 +1,3 @@
+name = "\tClara Hwang\n"
+print("\nUsing strip():")
+print(name.strip())

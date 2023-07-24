@@ -1,0 +1,2 @@
+favorite_transportation = ['airplane', 'car']
+print("I want to go to London riding an {}".format(favorite_transportation[0]))

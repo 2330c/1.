@@ -1,0 +1,3 @@
+guests = ['Edison', 'Jefferson', 'Washington']
+name = guests[-1].title()
+print("Welcome, " + name)

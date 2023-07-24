@@ -1,0 +1,25 @@
+guests = ["Edison", "Jefferson", "Washington"]
+
+name = guests[0].title()
+print("Welcome, " + name)
+
+name = guests[1].title()
+print("Welcome, " + name)
+
+name = guests[-1].title()
+print("Welcome, " + name)
+
+name = guests[0].title()
+print(name + " can't make it.")
+
+del(guests[0])
+guests.insert(0, "Adams")
+
+name = guests[0].title()
+print("Welcome, " + name)
+
+name = name = guests[1].title()
+print("Welcome, " + name)
+
+name = guests[-1].title()
+print("Welcome, " + name)

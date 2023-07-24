@@ -1,0 +1,2 @@
+favorite_number = 8
+print("{} is my favorite number".format(favorite_number))

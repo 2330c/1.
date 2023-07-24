@@ -1,0 +1,3 @@
+names = ['Hannah', 'Kay', 'Lauren']
+message = "Hello, " + names[-1].title() + "!"
+print(message)
