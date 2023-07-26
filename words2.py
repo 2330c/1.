@@ -141,6 +141,15 @@ geriatric = ["relating to old people, especially with regard to their healthcare
 proliferate = ["increase rapidly in numbers; multiply", "verb"]
 epistemological = ["having to do with inference or the ability to conclude the truth of statements", "adjective"] 
 epistemology = ["the study of knowledge and how one can come to know something", "adjective"]
+decipher = ["convert a text written in code, or a coded signal into normal language", "verb"]
+real = ["a unit of currency in Spain for several centuries after the mid-14th century", "noun"]
+pittance = ["a very small or inadequate amount of money paid to someone as an allowance or wage", "noun"]
+nanoworld = ["the world at a microscopic level", "noun"]
+glom = ["become stuck or attached to", "verb"]
+convulsion = ["a violent social or political upheaval", "noun"]
+dawdle = ["to move slowly and idly", "verb"]
+meandle = ["follow a winding course", "verb"]
+
 
 glossary = {"trite":trite,
             "pithy":pithy,
@@ -262,7 +271,7 @@ glossary = {"trite":trite,
             "queasy":queasy,
             "calisthenics":calisthenics,
             "sublunary":sublunary,
-            "stait":strait,
+            "strait":strait,
             "austere":austere,
             "egregious":egregious,
             "stark":stark,
@@ -284,6 +293,14 @@ glossary = {"trite":trite,
             "geriatric":geriatric,
             "proliferate":proliferate,
             "epistemological":epistemological,
-            "epistemology":epistemology}
+            "epistemology":epistemology,
+            "decipher":decipher,
+            "real":real,
+            "pittance":pittance,
+            "nanoworld":nanoworld,
+            "glom":glom,
+            "convulsion":convulsion,
+            "dawdle":dawdle,
+            "meandle":meandle}
 
 print(glossary)
