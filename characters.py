@@ -21,3 +21,5 @@ print(s)
 
 for i in range(55100,55250): 
 ... s += chr(i)
+
+#The last Hangul syllable is at 55203

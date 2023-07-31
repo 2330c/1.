@@ -148,7 +148,7 @@ nanoworld = ["the world at a microscopic level", "noun"]
 glom = ["become stuck or attached to", "verb"]
 convulsion = ["a violent social or political upheaval", "noun"]
 dawdle = ["to move slowly and idly", "verb"]
-meandle = ["follow a winding course", "verb"]
+meander = ["follow a winding course", "verb"]
 
 
 glossary = {"trite":trite,
@@ -301,6 +301,6 @@ glossary = {"trite":trite,
             "glom":glom,
             "convulsion":convulsion,
             "dawdle":dawdle,
-            "meandle":meandle}
+            "meander":meander}
 
 print(glossary)

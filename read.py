@@ -29,13 +29,24 @@ print(ys)
 
 subsetxs = [] #For quizzes for at least 11 questions
 subsetys = []
-for i in range(len(ns)):
-    n = ns[i]
-    if n > 10:
-        subsetxs.append(xs[i])
-        subsetys.append(ys[i])
 
-fig, ax = plt.subplots()
-ax.plot(xs,ys)
-#ax.scatter(dist3,period2)
-plt.show()
+def getsubset(threshold=None):
+    """."""
+    for i in range(len(ns)):
+        n = ns[i]
+        if threshold is None or n > threshold:
+            subsetxs.append(xs[i])
+            subsetys.append(ys[i])
+
+threshold = input('Only use attempts with more than how many questions?')
+
+try:
+    threshold = int(threshold)
+except ValueError as e:
+    print(e)
+else:
+    getsubset()
+    fig, ax = plt.subplots()
+    ax.plot(xs,ys)
+    #ax.scatter(dist3,period2)
+    plt.show()
