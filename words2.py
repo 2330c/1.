@@ -149,6 +149,20 @@ glom = ["become stuck or attached to", "verb"]
 convulsion = ["a violent social or political upheaval", "noun"]
 dawdle = ["to move slowly and idly", "verb"]
 meander = ["follow a winding course", "verb"]
+swathe = ["wrap in several layers of fabric", "verb"]
+impel = ["drive forward; propel", "verb"]
+finite = ["having limits or bounds", "adjective"]
+metastasis = ["the process by which cancer cells spread to other parts of the body", "noun"]
+corral = ["gather together and confine", "verb"]
+noxious = ["harmful, poisonous, or very unpleasant", "adjective"]
+somatosensory = ["the ability to interpret bodily sensation", "adjective"]
+insular = ["separate or isolated from the surroundings", "adjective"]
+cortex = ["the outer layer of the cerebrum, composed of folded gray matter and playing an important role in consciousness", "noun"]
+sentinel = ["a soldier or guard whose job is to stand and keep watch", "noun"]
+obliterate = ["destroy utterly; wipe out", "verb"]
+repudiate = ["deny the truth or validity of", "verb"]
+photon = ["a particle representing a quantum of light or other electromagnetic radiation", "noun"]
+fluence = ["mysterious, magical, or hypnotic power", "noun"]
 
 
 glossary = {"trite":trite,
@@ -301,6 +315,20 @@ glossary = {"trite":trite,
             "glom":glom,
             "convulsion":convulsion,
             "dawdle":dawdle,
-            "meander":meander}
+            "meander":meander,
+            "swathe":swathe,
+            "impel":impel,
+            "finite":finite,
+            "metastasis":metastasis,
+            "corral":corral,
+            "noxious":noxious,
+            "somatosensory":somatosensory,
+            "insular":insular,
+            "cortex":cortex,
+            "sentinel":sentinel,
+            "obliterate":obliterate,
+            "repudiate":repudiate,
+            "photon":photon,
+            "fluence":fluence}
 
 print(glossary)

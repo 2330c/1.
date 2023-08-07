@@ -1,4 +1,5 @@
 import numpy
+import math
 
 # y = (9-9*x**2/25)**.5
 # True for any quadrant 1 point on the ellipse
@@ -15,20 +16,31 @@ for number in numbers:
     y = (9-9*number**2/25)**.5
     print(y)
 
-print("The areas for each rectangle: ")
-for number in numbers:
-    a = ((9-9*number**2/25)**.5)*.5
-    print(a)
+acc = 0
+for w in numpy.arange(0,5,0.5):
+    acc = acc + ((9-9*w**2/25)**.5)*.5
 
-print("The area of the ellipse: ")
+print("1st quadrant area",acc)
+print("total area",4*acc)
+print("pi*a*b",math.pi*5*3)
 
-def sum (x):
-    return x + a
+acc = 0
+for w in numpy.arange(0,5,0.05):
+    acc = acc + ((9-9*w**2/25)**.5)*.05
 
-def sigma(f):
+print("1st quadrant area",acc)
+print("total area",4*acc)
+print("pi*a*b",math.pi*5*3)
+
+def approximate_area(n):
+    "n is the number of rectangles to use"
     acc = 0
-    for w in numpy.arange(0,4.5,0.5):
-        acc = acc + w
-    return acc
+    for w in numpy.arange(0,5,5/n): #was 0.05 for n=100
+        acc = acc + ((9-9*w**2/25)**.5)*5/n #was 0.05 for n=100
 
-print(sigma(a))
+    print("1st quadrant area",acc)
+    print("total area",4*acc)
+    print("pi*a*b",math.pi*5*3)
+
+approximate_area(1000)
+approximate_area(10000)
