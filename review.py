@@ -49,10 +49,10 @@ while x>1:
 
 import time
 start=time.perf_counter()
-results={}
-for seed in range(1,30000):
+results={} #This makes an empty dictionary
+for seed in range(1,200000):
     it=[seed]
-    while it[-1]>1: #-1 means the *last* entry of the lsit.
+    while it[-1]>1: #-1 means the *last* entry of the list.
         it.append(g(it[-1]))
     results[seed]=len(it) #dictionary by key is just like list by index
 #print(results)
@@ -64,7 +64,28 @@ print("It took",end-start,"seconds.")
 import matplotlib.pyplot as plt
 import numpy as np
 
-x=np.random.normal(170,10,250)
+#x=np.random.normal(170,10,250)
 
-plt.hist(results.values())
+# Create three subplots
+#ax1.set_title('Sharing Y axis')
+f, (ax0, ax1, ax2) = plt.subplots(1, 3, sharey=True)
+
+#Dictionary slicing:
+#print({k:d[k] for k in l if k in d})
+
+from scipy import stats
+values0 = {k:results[k] for k in results if k%3==0}.values() #0 mod 3
+values1 = {k:results[k] for k in results if k%3==1}.values() #1 mod 2
+values2 = {k:results[k] for k in results if k%3==2}.values() #2 mod 3
+print("For 0 mod 3:",stats.describe(list(values0)))
+print("For 1 mod 3:",stats.describe(list(values1)))
+print("For 2 mod 3:",stats.describe(list(values2)))
+ax0.hist(values0)
+ax1.hist(values1)
+ax2.hist(values2)
+#plt.hist(results.values())
 plt.show()
+
+# / gives a float (floating-point number).
+# // gives an integer (integer quotient --> rounds down).
+# % gives the remainder.
