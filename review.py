@@ -77,7 +77,11 @@ from scipy import stats
 values0 = {k:results[k] for k in results if k%4==0}.values() #0 mod 4
 values1 = {k:results[k] for k in results if k%4==1}.values() #1 mod 4
 values2 = {k:results[k] for k in results if k%4==2}.values() #2 mod 4
-values3 = {k:results[k] for k in results if k%4==3}.values() #2 mod 4
+values3 = {k:results[k] for k in results if k%4==3}.values() #3 mod 4
+
+valuesk = {k:results[k] for k in results if k%n==n}.values() #0 mod n
+valuesk = {k:results[k] for k in results if k%n==n-1}.values() #n-1 mod n
+
 print("For 0 mod 4:",stats.describe(list(values0)))
 print("For 1 mod 4:",stats.describe(list(values1)))
 print("For 2 mod 4:",stats.describe(list(values2)))
