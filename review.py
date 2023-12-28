@@ -68,21 +68,24 @@ import numpy as np
 
 # Create three subplots
 #ax1.set_title('Sharing Y axis')
-f, (ax0, ax1, ax2) = plt.subplots(1, 3, sharey=True)
+f, (ax0, ax1, ax2, ax3) = plt.subplots(1, 4, sharey=True)
 
 #Dictionary slicing:
 #print({k:d[k] for k in l if k in d})
 
 from scipy import stats
-values0 = {k:results[k] for k in results if k%3==0}.values() #0 mod 3
-values1 = {k:results[k] for k in results if k%3==1}.values() #1 mod 2
-values2 = {k:results[k] for k in results if k%3==2}.values() #2 mod 3
-print("For 0 mod 3:",stats.describe(list(values0)))
-print("For 1 mod 3:",stats.describe(list(values1)))
-print("For 2 mod 3:",stats.describe(list(values2)))
+values0 = {k:results[k] for k in results if k%4==0}.values() #0 mod 4
+values1 = {k:results[k] for k in results if k%4==1}.values() #1 mod 4
+values2 = {k:results[k] for k in results if k%4==2}.values() #2 mod 4
+values3 = {k:results[k] for k in results if k%4==3}.values() #2 mod 4
+print("For 0 mod 4:",stats.describe(list(values0)))
+print("For 1 mod 4:",stats.describe(list(values1)))
+print("For 2 mod 4:",stats.describe(list(values2)))
+print("For 3 mod 4:",stats.describe(list(values2)))
 ax0.hist(values0)
 ax1.hist(values1)
 ax2.hist(values2)
+ax3.hist(values3)
 #plt.hist(results.values())
 plt.show()
 
