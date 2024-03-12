@@ -66,31 +66,26 @@ import numpy as np
 
 #x=np.random.normal(170,10,250)
 
-# Create three subplots
+n = 8
+
+# Create n subplots
 #ax1.set_title('Sharing Y axis')
-f, (ax0, ax1, ax2, ax3) = plt.subplots(1, 4, sharey=True)
+f, axs = plt.subplots(1, n, sharey=True)
 
 #Dictionary slicing:
 #print({k:d[k] for k in l if k in d})
 
 from scipy import stats
-values0 = {k:results[k] for k in results if k%4==0}.values() #0 mod 4
-values1 = {k:results[k] for k in results if k%4==1}.values() #1 mod 4
-values2 = {k:results[k] for k in results if k%4==2}.values() #2 mod 4
-values3 = {k:results[k] for k in results if k%4==3}.values() #3 mod 4
+values = [None for j in range(n)]
+for j in range(n):
+    values[j] = {k:results[k] for k in results if k%n==j}.values() #j mod n
 
-valuesk = {k:results[k] for k in results if k%n==n}.values() #0 mod n
-valuesk = {k:results[k] for k in results if k%n==n-1}.values() #n-1 mod n
+for j in range(n):
+    print("For",j,"mod",n,":",stats.describe(list(values[j])))
 
-print("For 0 mod 4:",stats.describe(list(values0)))
-print("For 1 mod 4:",stats.describe(list(values1)))
-print("For 2 mod 4:",stats.describe(list(values2)))
-print("For 3 mod 4:",stats.describe(list(values2)))
-ax0.hist(values0)
-ax1.hist(values1)
-ax2.hist(values2)
-ax3.hist(values3)
-#plt.hist(results.values())
+for j in range(n):
+    axs[j].hist(values[j])
+
 plt.show()
 
 # / gives a float (floating-point number).
