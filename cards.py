@@ -132,4 +132,4 @@ def dealstats(ilk, numiters = 100, numdeals = 1000):
     plt.hist(anslist)
     plt.show()
 
-#dealstats(fullhouse,300,1000)
+dealstats(straight,100,100000)
