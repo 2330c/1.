@@ -9,9 +9,9 @@ def numberGenerator(numTrials, probability):
     return numSuccesses
 
 def numberOfSuccesses():
-    numTrials = input("How many trials?")
+    numTrials = input("How many trials? ")
     numTrials = int(numTrials)
-    probability = input("Probability of success of each?")
+    probability = input("Probability of success of each? ")
     if "/" in probability:
         pos = probability.find("/")
         numerator = probability[:pos]
@@ -20,10 +20,34 @@ def numberOfSuccesses():
     else:
         probability = float(probability)
     N = 10
+    numsOfSuccesses = []
     for i in range(N):
-        print(numberGenerator(numTrials, probability), "successes.")
+        wins = numberGenerator(numTrials, probability)
+        print(wins, "successes.")
+        numsOfSuccesses.append(wins)
+    print("They were", numsOfSuccesses)
+    
+    from collections import Counter
+    counter = Counter(numsOfSuccesses)
+    print("counter:", counter)
+
+    proportions = []
+    for k in range(N+1):
+        if k in counter:
+            proportions.append(counter[k]/N)
+        else:
+            proportions.append(0.0)
+    print(proportions)
+
+    import matplotlib.pyplot as plt
+    plt.hist(numsOfSuccesses, bins=range(N+1))
+    plt.show()
+
 
 #except ValueError as e:
  #   print(e)
         
 numberOfSuccesses()
+
+def numTimesEquals(targetNum, trials, list):
+    """Determines the number of times targetNum shows up in trials."""
