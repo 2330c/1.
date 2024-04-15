@@ -16,10 +16,9 @@ def add():
         planets[name] = Planet(name)
 
 def delete():
-    def delete():
     name = input("Name: ")
     if name in planets:
-        confirm = input("Are you sure you want to delete" + name + "(yes/no): ")
+        confirm = input("Are you sure you want to delete " + name + " (yes/no): ")
         if confirm.lower() == "yes":
             del name()
             print(name + "deleted successfully.")
@@ -27,7 +26,6 @@ def delete():
             print("Deletion canceled.")
     else:
         print("Sorry,", name, "is not found in the list of planets.")
-
     pass
 
 def show():
