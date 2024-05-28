@@ -24,28 +24,27 @@ def generate_choices(value):
     if value < 20:
         wrongchoice = [
             [value + 20, value + 60, value + 80],
-            [jiggle(value + 10), jiggle(value + 30), jiggle(value + 50)]]
+            [jiggle(value + 10,5), jiggle(value + 30,20), jiggle(value + 50)]]
     elif value < 50:
         wrongchoice = [
             [value - 10, value + 25, value + 50],
-            [jiggle(value - 5), jiggle(value + 15), jiggle(value + 35)]]
+            [jiggle(value - 10,5), jiggle(value + 15,10), jiggle(value + 35,15)]]
     else:
         wrongchoice = [
             [value - 40, value - 20, value - 10],
-            [jiggle(value - 30), jiggle(value - 15), jiggle(value - 5)]]
+            [jiggle(value - 30,20), jiggle(value - 15,10), jiggle(value - 10,5)]]
     return random.choice(wrongchoice)
 
 letters = ["A", "B", "C", "D"]
 correctchoice = value
 wrongchoice = generate_choices(value)
 choices = [correctchoice] + [wrongchoice]
-random.shuffle(choices)
 
 li = [0,1,2,3]
 random.shuffle(li) #li will denote what index to go into in choices
 print("What % of the people had access to clean drinking water","in",key[0],"in",key[1],"?")
 for x in range(4):
-    if x == 0:  #This is the correct answer choice
+    if li[x] == 0:  #This is the correct answer choice
         print(f"{letters[x]}: {choices[0]:.2f}%")
     else:
         print(f"{letters[x]}: {choices[1][li[x]-1]:.2f}%")
