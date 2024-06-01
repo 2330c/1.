@@ -1,11 +1,11 @@
 import csv
 import random
 
-with open("proportion-using-safely-managed-drinking-water.csv") as f:
+with open("death-rate-from-malnutrition-ghe.csv") as f:
     reader = csv.reader(f)
     header = next(reader)
     print(header)
-    percents = {} # % access to safe drinking water by country & year
+    percents = {} # % death rate from malnutrition by country & year
     for row in reader:
         countryyear = (row[0], row[2])
         percentage = float(row[3])
@@ -20,10 +20,6 @@ def generate_choices(value):
         wrongchoice = [
             [value + 20, value + 60, value + 80],
             [jiggle(value + 10,5), jiggle(value + 30,20), jiggle(value + 50)]]
-    elif value < 50:
-        wrongchoice = [
-            [value - 10, value + 25, value + 50],
-            [jiggle(value - 10,5), jiggle(value + 15,10), jiggle(value + 35,15)]]
     else:
         wrongchoice = [
             [value - 40, value - 20, value - 10],
@@ -37,7 +33,7 @@ for x in range(num_questions):
     length = len(percents)
     r = random.randint(0,length-1)
     key = list(percents)[r] #a country-year pair
-    value = percents[key] #the % of people with clean drinking water
+    value = percents[key] #the % of people with malnutrition
 
     letters = ["A", "B", "C", "D"]
     correctchoice = value
@@ -46,7 +42,7 @@ for x in range(num_questions):
 
     li = [0,1,2,3]
     random.shuffle(li) #li will denote what index to go into in choices
-    print("What % of the people had access to clean drinking water","in",key[0],"in",key[1],"?")
+    print("What was the death rate from malnutrition","in",key[0],"in",key[1],"?")
     for x in range(4):
         if li[x] == 0:  #This is the correct answer choice
             print(f"{letters[x]}: {choices[0]:.2f}%")
