@@ -1,3 +1,5 @@
+import json
+
 print("Planet data program")
 print("""To keep track of planets' orbital periods,
       distances from the sun, and day lengths.""")
@@ -90,6 +92,9 @@ cmddict = {"a":add,
           "s":show,
           "e":edit,
           "c":calculate} #create a dictionary of functions for users
+
+with open(cmddict, 'j') as jsonfile:
+    json.dump(cmddict, jsonfile)
 
 cmd = "" #empty string
 msg = "(A)dd, (D)el, (S)how, (E)dit (C)alc, or (Q)uit: " #put things that I think the users will want to interact with

@@ -16,15 +16,29 @@ def jiggle(value, amount=30):
     return value + random.uniform(-amount, amount)
 
 def generate_choices(value):
-    if value < 20:
+    wrongchoice = []
+
+    if value == 0:
         wrongchoice = [
-            [value + 20, value + 60, value + 80],
-            [jiggle(value + 10,5), jiggle(value + 30,20), jiggle(value + 50)]]
+            jiggle(value + 0.5,0.1), jiggle(value + 1,0.1), jiggle(value + 1.5,0.1)]
+    elif value < 20:
+        wrongchoice = [
+            jiggle(value + 5,0.2), jiggle(value + 10,0.2), jiggle(value + 15,0.2)]
+    elif value < 50:
+        wrongchoice = [
+            jiggle(value + 10,0.3), jiggle(value + 20,0.3), jiggle(value + 30,0.3)]
     else:
         wrongchoice = [
-            [value - 40, value - 20, value - 10],
-            [jiggle(value - 30,20), jiggle(value - 15,10), jiggle(value - 10,5)]]
-    return random.choice(wrongchoice)
+            jiggle(value*1.5,0.3), jiggle(value*2,0.3), jiggle(value*2.5,0.3)]
+
+    while len(wrongchoice) < 3:
+        newchoice = jiggle(value, 0.3)
+        if newchoice not in wrongchoice and newchoice != value:
+            wrongchoice.append(newchoice)
+
+    random.shuffle(wrongchoice)
+
+    return wrongchoice[:3]
 
 num_questions = 10
 score = 0
@@ -38,16 +52,23 @@ for x in range(num_questions):
     letters = ["A", "B", "C", "D"]
     correctchoice = value
     wrongchoice = generate_choices(value)
-    choices = [correctchoice] + [wrongchoice]
+    choices = [correctchoice] + wrongchoice
 
     li = [0,1,2,3]
     random.shuffle(li) #li will denote what index to go into in choices
     print("What was the death rate from malnutrition","in",key[0],"in",key[1],"?")
-    for x in range(4):
-        if li[x] == 0:  #This is the correct answer choice
-            print(f"{letters[x]}: {choices[0]:.2f}%")
+    for i in range(4):
+        if li[i] == 0:  # This is the correct answer choice
+            print(f"{letters[i]}: {choices[0]:.2f}%")
         else:
-            print(f"{letters[x]}: {choices[1][li[x]-1]:.2f}%")
+            print(f"{letters[i]}: ", end="")
+            if isinstance(choices[li[i] - 1], float):
+                print(f"{choices[li[i] - 1]:.2f}%")
+            else:
+                for choice in choices[li[i] - 1]:
+                    print(f"{choice:.2f}%", end=" ")
+                print()
+
     answer = input()
     index = letters.index(answer)
     if li[index]==0:

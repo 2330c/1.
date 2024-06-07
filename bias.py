@@ -16,6 +16,17 @@ def area(g,a,b,n=40):
     for x in sp:
         retval+=g(x)*width
     return retval
+
 print("mu",mu)
 print("si",si)
 print("area",area(f,mu-7*si,mu+7*si))
+#The above print lines should be commented out
+
+#Define a way below to *sample* individuals from the distribution.
+#One way: generate a random number from 0 to 1.
+#Make a "cumulative area" function that keeps counting up area
+#and checking whether the area got above that random number.
+#whenever the area first exceeds that random number,
+#return the x-value you were at.
+#This is a reasonable way to generate random individuals
+#from the distribution.

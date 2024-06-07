@@ -119,6 +119,14 @@ def dealstats(ilk, numiters = 100, numdeals = 1000):
             hand=Hand(deck,5)
             if ilk(hand):
                 S += 1
+                #assignmnet operation:
+                    #s+=1, s=s+1 (increment)
+                    #p*=2, p=2p (double)
+                    #k-=1, k=k-1 (decrement)
+                    #q/=2, q=q/2 (halve; returns a float)
+                    #q//=2 (division; returns an integer)
+                    #r%=7 (to reduce (r modulo 7); r becomes its own remander when divided by 7)
+                    #e**=2 e=e^2(to square)
         #print(S/numdeals, "rate of flushes among",numdeals,"hands.")
         #0.00198 expected from theory
         anslist.append(S/numdeals)
