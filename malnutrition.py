@@ -13,31 +13,46 @@ with open("death-rate-from-malnutrition-ghe.csv") as f:
     print(len(percents))
 
 def jiggle(value, amount=30):
-    return value + random.uniform(-amount, amount)
+    newvalue = value + random.uniform(-amount, amount)
+    return max(newvalue,0)
 
 def generate_choices(value):
     wrongchoice = []
+    usedchoice = set()
 
     if value == 0:
         wrongchoice = [
-            jiggle(value + 0.5,0.1), jiggle(value + 1,0.1), jiggle(value + 1.5,0.1)]
-    elif value < 20:
+            jiggle(value + 0.5,0.1), jiggle(value + 1,0.1), jiggle(value + 1.5,0.1),
+            jiggle(value - 0.5,0.1), jiggle(value - 1,0.1), jiggle(value - 1.5,0.1)]
+    elif value < 0.5:
         wrongchoice = [
-            jiggle(value + 5,0.2), jiggle(value + 10,0.2), jiggle(value + 15,0.2)]
-    elif value < 50:
+            jiggle(value + 0.25,0.2), jiggle(value + 0.5,0.2), jiggle(value + 0.75,0.2),
+            jiggle(value - 0.25,0.2), jiggle(value - 0.5,0.2), jiggle(value - 0.75,0.2)]
+    elif value < 4:
         wrongchoice = [
-            jiggle(value + 10,0.3), jiggle(value + 20,0.3), jiggle(value + 30,0.3)]
+            jiggle(value + 2,0.3), jiggle(value + 2.5,0.3), jiggle(value + 3,0.3),
+            jiggle(value - 2,0.3), jiggle(value - 2.5,0.3), jiggle(value - 3,0.3)]
     else:
         wrongchoice = [
-            jiggle(value*1.5,0.3), jiggle(value*2,0.3), jiggle(value*2.5,0.3)]
-
-    while len(wrongchoice) < 3:
-        newchoice = jiggle(value, 0.3)
-        if newchoice not in wrongchoice and newchoice != value:
-            wrongchoice.append(newchoice)
-
+            jiggle(value*1.5,0.3), jiggle(value*2,0.3), jiggle(value*2.5,0.3),
+            jiggle(value/1.5,0.3), jiggle(value/2,0.3), jiggle(value/2.5,0.3)]
+    
     random.shuffle(wrongchoice)
 
+    while len(wrongchoice) < 3:
+        newchoice = jiggle(value,0.3)
+        if newchoice != value and newchoice not in usedchoice:
+            wrongchoice.append(newchoice)
+            usedchoice.add(newchoice)
+
+    while len(set(wrongchoice)) < 3:
+        for c in range(len(wrongchoice)):
+            if wrongchoice.count(wrongchoice[i]) > 1:
+                wrongchoice[i] = jiggle(value, 0.3)
+
+    if value > 4:
+        wrongchoice.append(0)
+    
     return wrongchoice[:3]
 
 num_questions = 10
@@ -65,11 +80,9 @@ for x in range(num_questions):
             if isinstance(choices[li[i] - 1], float):
                 print(f"{choices[li[i] - 1]:.2f}%")
             else:
-                for choice in choices[li[i] - 1]:
-                    print(f"{choice:.2f}%", end=" ")
-                print()
+                print(f"{letters[i]}: {choices[li[i]]:.2f}%")
 
-    answer = input()
+    answer = input().upper()
     index = letters.index(answer)
     if li[index]==0:
         print("Correct!")
