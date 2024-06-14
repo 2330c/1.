@@ -5,7 +5,7 @@ with open("death-rate-from-malnutrition-ghe.csv") as f:
     reader = csv.reader(f)
     header = next(reader)
     print(header)
-    percents = {} # % death rate from malnutrition by country & year
+    percents = {} #Death rate per 100,000 people
     for row in reader:
         countryyear = (row[0], row[2])
         percentage = float(row[3])
@@ -71,16 +71,13 @@ for x in range(num_questions):
 
     li = [0,1,2,3]
     random.shuffle(li) #li will denote what index to go into in choices
-    print("What was the death rate from malnutrition","in",key[0],"in",key[1],"?")
+    print("What was the death rate per 100,000 people per year from malnutrition","in",key[0],"in",key[1],"?")
     for i in range(4):
         if li[i] == 0:  # This is the correct answer choice
-            print(f"{letters[i]}: {choices[0]:.2f}%")
+            print(f"{letters[i]}: {choices[0]:.2f}")
         else:
             print(f"{letters[i]}: ", end="")
-            if isinstance(choices[li[i] - 1], float):
-                print(f"{choices[li[i] - 1]:.2f}%")
-            else:
-                print(f"{letters[i]}: {choices[li[i]]:.2f}%")
+            print(f"{choices[li[i]]:.2f}")
 
     answer = input().upper()
     index = letters.index(answer)
