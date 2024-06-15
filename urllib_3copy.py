@@ -1,25 +1,26 @@
 import urllib3
-import requests
+#import requests
+import time
 import csv
 resp = urllib3.request("GET", "https://www.cia.gov/the-world-factbook/field/air-pollutants")
 print(resp.status)
-print(resp.data)
+#print(resp.data)
 
 html_doc = resp.data
 from bs4 import BeautifulSoup
 soup = BeautifulSoup(html_doc, 'html.parser')
 
-print(soup.prettify())
-print(soup.title)
-print(soup.title.name)
-print(soup.title.string)
-print(soup.title.parent.name)
-print("soup.a",soup.a)
-print("len(soup.find_all('a'))",len(soup.find_all('a')))
+#print(soup.prettify())
+#print(soup.title)
+#print(soup.title.name)
+#print(soup.title.string)
+#print(soup.title.parent.name)
+#print("soup.a",soup.a)
+#print("len(soup.find_all('a'))",len(soup.find_all('a')))
 
 body_tag = soup.body
-print("len(body_tag)",len(body_tag))
-print("len(body_tag.contents)",len(body_tag.contents))
+#print("len(body_tag)",len(body_tag))
+#print("len(body_tag.contents)",len(body_tag.contents))
 
 countryemissions = {}
 
@@ -47,19 +48,22 @@ wpp_url = 'https://population.un.org/wpp2019/Download/Files/1_Indicators%20(Stan
 
 
 try:
-    wpp_response = requests.get(wpp_url)
+    resp = urllib3.request("GET", wpp_url)
 
-    if wpp_response.status_code == 200:
+    if resp.status == 200:
+        print(type(resp.status))
         print("Successfully fetched the UN WPP CSV file.")
     else:
-        print(f"Failed to fetch the UN WPP CSV file. Status code: {wpp_response.status_code}")
+        print(f"Failed to fetch the UN WPP CSV file. Status code: {resp.status}")
         exit()
 
     csv_filename = 'WPP2019_TotalPopulationBySex.csv'
     with open(csv_filename, 'wb') as f:
-        f.write(wpp_response.content)
+        f.write(resp.data)
 
     print(f"CSV file '{csv_filename}' saved successfully.")
+
+    time.sleep(1)
 
     populationdict = {}
 
@@ -67,10 +71,14 @@ try:
         with open('WPP2019_TotalPopulationBySex.csv', newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
 
+            header = next(reader)
+            
             for row in reader:
-                if row['Variant'] == 'Medium' and row['Time'] == '2020' and row['Sex'] == 'BothSexes':
-                    country = row['Location']
-                    total_population = int(float(row['PopTotal']))
+                if len(row) < 9:
+                    continue
+                if row[3] == 'Medium' and row[4] == '2020':
+                    country = row[1]
+                    total_population = int(float(row[8]))
                     populationdict[country] = total_population
 
         print("Extracted population data:", populationdict)
