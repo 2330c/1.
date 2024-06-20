@@ -2,6 +2,8 @@ import urllib3
 #import requests
 import time
 import csv
+import matplotlib.pyplot as plt
+import numpy as np
 resp = urllib3.request("GET", "https://www.cia.gov/the-world-factbook/field/air-pollutants")
 print(resp.status)
 #print(resp.data)
@@ -22,24 +24,41 @@ body_tag = soup.body
 #print("len(body_tag)",len(body_tag))
 #print("len(body_tag.contents)",len(body_tag.contents))
 
-countryemissions = {}
+countryemissions = {} #keys = country_name; values = [amount, year]
+#This is only keeping track of carbon dioxide emissions
 
+#i=0
 for div in soup.find_all('div', class_='pb30'):
+    #i+=1
+    #if i>=10:
+        #break
     try:
         country_name_tag = div.find('h3')
-        emissions_data_tag = div.find('p')
-
-        if country_name_tag and emissions_data_tag:
-            country_name = country_name_tag.text.strip()
-            emissions_data = emissions_data_tag.text.strip().split()
-            emissions = float(emissions_data[0])
-            year = int(emissions_data[-1])
-            countryemissions[country_name] = [emissions, year]
-        else:
-            print("Missing h3 or p tag in div:", div)
+        for emissions_type in div.find_all('strong'):
+            if country_name_tag and emissions_type:
+                country_name = country_name_tag.text.strip()
+                sibling_soup = emissions_type.next_sibling
+                emissions_type = emissions_type.text.strip()
+                #emissions = float(emissions_type[0])
+                #year = int(emissions_type[-1])
+                #countryemissions[country_name] = [emissions, year]
+                sibling_soup = sibling_soup.split()
+                amount = float(sibling_soup[0].replace(",", ""))
+                units = " ".join(sibling_soup[1:-2])
+                year = int(sibling_soup[-2][1:])
+                #print(emissions_type, country_name, sibling_soup, amount, units, year)
+                specific_emissions_type = emissions_type
+                if specific_emissions_type == 'carbon dioxide emissions:':
+                    countryemissions[country_name] = [amount, year]
+                    if units == 'megatons':
+                        pass
+                    else:
+                        print("NOT OK")
+            else:
+                print("Missing h3 or p tag in div:", div)
     except Exception as e:
         print(f"Error processing data for a country: {e}")
-
+        #print(emissions_type, country_name, sibling_soup, amount, units, year)
 print("Extracted emissions data:", countryemissions)
 
 print(countryemissions)
@@ -65,20 +84,18 @@ try:
 
     time.sleep(1)
 
-    populationdict = {}
+    populationdict = {} #keys: country_names; values: total_population
 
     try:
         with open('WPP2019_TotalPopulationBySex.csv', newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
-
-            header = next(reader)
             
             for row in reader:
                 if len(row) < 9:
                     continue
-                if row[3] == 'Medium' and row[4] == '2020':
-                    country = row[1]
-                    total_population = int(float(row[8]))
+                if row['Variant'] == 'Medium' and row['Time'] == '2020':
+                    country = row['Location']
+                    total_population = int(float(row['PopTotal']))
                     populationdict[country] = total_population
 
         print("Extracted population data:", populationdict)
@@ -104,5 +121,38 @@ try:
 except Exception as e:
         print(f"Error occurred: {e}")
 
-except Exception as e:
-    print(f"Error processing emissions data: {e}")
+countries = list(emissionspercapita.keys())
+populations = [emissionspercapita[country][2] for country in countries]
+emissions = [emissionspercapita[country][0] for country in countries]
+
+plt.figure(figsize=(14, 8))
+plt.scatter(populations, emissions, alpha=0.5)
+
+m, b = np.polyfit(populations, emissions, 1)
+plt.plot(populations, m * np.array(populations), color='red')
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel('Population')
+plt.ylabel('Carbon Emissions (Mt)')
+plt.title('Population vs Carbon Emissions')
+plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+plt.show()
+
+emissions_per_capita_sorted = sorted(emissionspercapita.items(), key=lambda x: x[1][3], reverse=True)
+top_10_worst = emissions_per_capita_sorted[:10]
+top_10_best = emissions_per_capita_sorted[-10:]
+
+mean_per_capita = np.mean([data[3] for data in emissionspercapita.values()])
+median_per_capita = np.median([data[3] for data in emissionspercapita.values()])
+
+print("\nTop 10 countries with the worst emissions per capita:")
+for country, data in top_10_worst:
+    print(f"{country}: {data[3]:.2f} Mt per million people")
+
+print("\nTop 10 countries with the best emissions per capita:")
+for country, data in top_10_best:
+    print(f"{country}: {data[3]:.2f} Mt per million people")
+
+print(f"\nMean emissions per capita: {mean_per_capita:.2f} Mt per million people")
+print(f"Median emissions per capita: {median_per_capita:.2f} Mt per million people")
