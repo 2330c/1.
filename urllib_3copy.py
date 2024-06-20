@@ -4,6 +4,7 @@ import time
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+import mplcursors
 resp = urllib3.request("GET", "https://www.cia.gov/the-world-factbook/field/air-pollutants")
 print(resp.status)
 #print(resp.data)
@@ -137,6 +138,12 @@ plt.xlabel('Population')
 plt.ylabel('Carbon Emissions (Mt)')
 plt.title('Population vs Carbon Emissions')
 plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+
+cursor = mplcursors.cursor(hover=True)
+cursor.connect("add", lambda sel: sel.annotation.set_text(countries[sel.target.index]))
+
+plt.legend()
+plt.savefig('carbonemissions.png')
 plt.show()
 
 emissions_per_capita_sorted = sorted(emissionspercapita.items(), key=lambda x: x[1][3], reverse=True)
