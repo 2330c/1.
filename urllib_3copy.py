@@ -5,6 +5,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 import mplcursors
+import os.path
 resp = urllib3.request("GET", "https://www.cia.gov/the-world-factbook/field/air-pollutants")
 print(resp.status)
 #print(resp.data)
@@ -64,26 +65,25 @@ print("Extracted emissions data:", countryemissions)
 
 print(countryemissions)
 
-wpp_url = 'https://population.un.org/wpp2019/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv'
-
-
 try:
-    resp = urllib3.request("GET", wpp_url)
+    if not os.path.isfile('WPP2019_TotalPopulationBySex.csv'):
+        wpp_url = 'https://population.un.org/wpp2019/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv'
+        resp = urllib3.request("GET", wpp_url)
 
-    if resp.status == 200:
-        print(type(resp.status))
-        print("Successfully fetched the UN WPP CSV file.")
-    else:
-        print(f"Failed to fetch the UN WPP CSV file. Status code: {resp.status}")
-        exit()
+        if resp.status == 200:
+            print(type(resp.status))
+            print("Successfully fetched the UN WPP CSV file.")
+        else:
+            print(f"Failed to fetch the UN WPP CSV file. Status code: {resp.status}")
+            exit()
 
-    csv_filename = 'WPP2019_TotalPopulationBySex.csv'
-    with open(csv_filename, 'wb') as f:
-        f.write(resp.data)
+        csv_filename = 'WPP2019_TotalPopulationBySex.csv'
+        with open(csv_filename, 'wb') as f:
+            f.write(resp.data)
 
-    print(f"CSV file '{csv_filename}' saved successfully.")
+        print(f"CSV file '{csv_filename}' saved successfully.")
 
-    time.sleep(1)
+        time.sleep(1)
 
     populationdict = {} #keys: country_names; values: total_population
 
@@ -96,7 +96,9 @@ try:
                     continue
                 if row['Variant'] == 'Medium' and row['Time'] == '2020':
                     country = row['Location']
-                    total_population = int(float(row['PopTotal']))
+                    if country == 'United States of America':
+                        country = 'United States'
+                    total_population = int(float(row['PopTotal'])*1000) #Because the CSV lists populations in thousands of people
                     populationdict[country] = total_population
 
         print("Extracted population data:", populationdict)
@@ -140,17 +142,66 @@ plt.title('Population vs Carbon Emissions')
 plt.grid(True, which='both', linestyle='--', linewidth=0.5)
 
 cursor = mplcursors.cursor(hover=True)
-cursor.connect("add", lambda sel: sel.annotation.set_text(countries[sel.target.index]))
+cursor.connect("add", lambda sel: sel.annotation.set_text(countries[int(sel.target.index)]))
 
 plt.legend()
 plt.savefig('carbonemissions.png')
 plt.show()
 
+try:
+    csv_filename = 'continents-according-to-our-world-in-data.csv'
+    continent_data = {}
+
+    with open(csv_filename, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            country = row['Entity']
+            continent = row['Continent']
+            if continent not in continent_data:
+                continent_data[continent] = []
+            continent_data[continent].append({
+                'country': country,
+                'population': populationdict.get(country, 0),
+                'emissions': countryemissions.get(country, [0, 0])[0]
+            })
+    print("Extracted continent data from the CSV file.")
+
+    continent = input("Enter the continent you'd like to see the graph for (North America, South America, Oceania, Asia, Europe, Africa): ").strip()
+    if continent not in continent_data:
+        print(f"Continent '{continent}' not found in the data.")
+        exit()
+
+    contdata = continent_data[continent]
+    populations = [entry['population'] for entry in contdata]
+    emissions = [entry['emissions'] for entry in contdata]
+    countries = [entry['country'] for entry in contdata]
+
+    plt.figure(figsize=(14, 8))
+    plt.scatter(populations, emissions, alpha=0.5)
+    if populations and emissions:
+        m, b = np.polyfit(populations, emissions, 1)
+        plt.plot(populations, m * np.array(populations), color='red')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel('Population')
+    plt.ylabel('Carbon Emissions (Mt)')
+    plt.title(f'Population vs Carbon Emissions ({continent})')
+    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+    cursor = mplcursors.cursor(hover=True)
+    cursor.connect("add", lambda sel: sel.annotation.set_text(countries[int(sel.index)]))
+    plt.legend()
+    plt.savefig(f'carbonemissions_{continent}.png')
+    plt.show()
+
+except Exception as e:
+    print(f"Error processing CSV file: {e}")
+    exit()
+
 emissions_per_capita_sorted = sorted(emissionspercapita.items(), key=lambda x: x[1][3], reverse=True)
 top_10_worst = emissions_per_capita_sorted[:10]
 top_10_best = emissions_per_capita_sorted[-10:]
 
-mean_per_capita = np.mean([data[3] for data in emissionspercapita.values()])
+#mean_per_capita = np.mean([data[3] for data in emissionspercapita.values()])
 median_per_capita = np.median([data[3] for data in emissionspercapita.values()])
 
 print("\nTop 10 countries with the worst emissions per capita:")
@@ -161,5 +212,5 @@ print("\nTop 10 countries with the best emissions per capita:")
 for country, data in top_10_best:
     print(f"{country}: {data[3]:.2f} Mt per million people")
 
-print(f"\nMean emissions per capita: {mean_per_capita:.2f} Mt per million people")
-print(f"Median emissions per capita: {median_per_capita:.2f} Mt per million people")
+#print(f"\nMean emissions per capita: {mean_per_capita:.2f} Mt per million people")
+print(f"\nMedian emissions per capita: {median_per_capita:.2f} Mt per million people")
