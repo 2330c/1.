@@ -166,32 +166,34 @@ try:
             })
     print("Extracted continent data from the CSV file.")
 
-    continent = input("Enter the continent you'd like to see the graph for (North America, South America, Oceania, Asia, Europe, Africa): ").strip()
-    if continent not in continent_data:
-        print(f"Continent '{continent}' not found in the data.")
-        exit()
+    continent = None
+    while continent != "Q" and continent != "":
+        continent = input("Enter the continent you'd like to see the graph for (North America, South America, Oceania, Asia, Europe, Africa): ").strip()
+        if continent not in continent_data:
+            print(f"Continent '{continent}' not found in the data.")
+            exit()
 
-    contdata = continent_data[continent]
-    populations = [entry['population'] for entry in contdata]
-    emissions = [entry['emissions'] for entry in contdata]
-    countries = [entry['country'] for entry in contdata]
+        contdata = continent_data[continent]
+        populations = [entry['population'] for entry in contdata]
+        emissions = [entry['emissions'] for entry in contdata]
+        countries = [entry['country'] for entry in contdata]
 
-    plt.figure(figsize=(14, 8))
-    plt.scatter(populations, emissions, alpha=0.5)
-    if populations and emissions:
-        m, b = np.polyfit(populations, emissions, 1)
-        plt.plot(populations, m * np.array(populations), color='red')
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.xlabel('Population')
-    plt.ylabel('Carbon Emissions (Mt)')
-    plt.title(f'Population vs Carbon Emissions ({continent})')
-    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
-    cursor = mplcursors.cursor(hover=True)
-    cursor.connect("add", lambda sel: sel.annotation.set_text(countries[int(sel.index)]))
-    plt.legend()
-    plt.savefig(f'carbonemissions_{continent}.png')
-    plt.show()
+        plt.figure(figsize=(14, 8))
+        plt.scatter(populations, emissions, alpha=0.5)
+        if populations and emissions:
+            m, b = np.polyfit(populations, emissions, 1)
+            plt.plot(populations, m * np.array(populations), color='red')
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel('Population')
+        plt.ylabel('Carbon Emissions (Mt)')
+        plt.title(f'Population vs Carbon Emissions ({continent})')
+        plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+        cursor = mplcursors.cursor(hover=True)
+        cursor.connect("add", lambda sel: sel.annotation.set_text(countries[int(sel.index)]))
+        plt.legend()
+        plt.savefig(f'carbonemissions_{continent}.png')
+        plt.show()
 
 except Exception as e:
     print(f"Error processing CSV file: {e}")
