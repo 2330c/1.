@@ -6,6 +6,7 @@ import csv
 from collections import defaultdict
 import numpy as np
 import matplotlib.pyplot as plt
+import mplcursors
 
 pm25namecount = defaultdict(int) # #times each string containing 'PM2.5' shows up
 #For a dd of type int, its default values are 0 (unless otherwise specified).
@@ -50,17 +51,41 @@ pm25emissions = defaultdict(float)
 
 with open("state_tier1_08feb2024_ktons.csv") as f:
     reader = csv.reader(f)
+    next(reader)
     header = next(reader)
+    print(header)
     state_code_index = header.index("State FIPS")
     twentytwentythree_index = header.index("emissions2023")
-
+    abbrev_index = header.index("State")
     for row in reader:
         state_code = int(row[state_code_index])
+        state_abbrev = row[abbrev_index]
+        abbrev[state_code] = state_abbrev
         try:
             emissions = float(row[twentytwentythree_index])
             pm25emissions[state_code] += emissions
         except ValueError as e:
             print(f"Skipping row: {row}, Error: {e}")
+
+population = {}
+with open("populationsbystate.csv") as f:
+    reader = csv.reader(f)
+    next(reader)
+    header = next(reader)
+    print(header)
+    for row in reader:
+        state_code = row[0]
+        population[state_code] = int(row[2])
+
+normalized_pm25_emissions = defaultdict(float)
+normalized_pm25_concentrations = defaultdict(float)
+
+for state_code in population:
+    if state_code in pm25emissions and state_code in pm25local:
+        emissions_per_capita = pm25emissions[state_code] / population[state_code]
+        concentrations_avg = np.mean(pm25local[state_code])
+        normalized_pm25_emissions[state_code] = emissions_per_capita
+        normalized_pm25_concentrations[state_code] = concentrations_avg / population[state_code]
 
 #print(abbrev)
 
@@ -72,12 +97,14 @@ with open("state_tier1_08feb2024_ktons.csv") as f:
 
 x_values = []
 y_values = []
+state_codes = []
 
 for state_code in pm25local.keys():
     if state_code in pm25emissions:
         x_values.append(pm25emissions[state_code])
         avg_pm25 = np.mean(pm25local[state_code])
         y_values.append(avg_pm25)
+        state_codes.append(state_code)
 
 try:
     correlation_coef = np.corrcoef(x_values, y_values)[0, 1]
@@ -91,5 +118,7 @@ plt.title('Correlation between PM2.5 Emissions and Average Observed PM2.5 Levels
 plt.xlabel('PM2.5 Emissions')
 plt.ylabel('Average Observed PM2.5 Levels')
 plt.grid(True)
+cursor = mplcursors.cursor(hover=True)
+cursor.connect("add", lambda sel: sel.annotation.set_text(abbrev[state_codes[int(sel.target.index)]]))
 plt.tight_layout()
 plt.show()

@@ -65,20 +65,18 @@ print("Extracted emissions data:", countryemissions)
 
 print(countryemissions)
 
-def download_if_nonexistent(wpp_url,csv_filename):
-    if not os.path.isfile('WPP2019_TotalPopulationBySex.csv'):
+def download_if_nonexistent(url,csv_filename,msg=""): #"UN WPP" or "CONTINENT"
+    if not os.path.isfile(csv_filename):
         try:
-            wpp_url = 'https://population.un.org/wpp2019/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv'
-            resp = urllib3.request("GET", wpp_url)
+            resp = urllib3.request("GET", url)
 
             if resp.status == 200:
                 print(type(resp.status))
-                print("Successfully fetched the UN WPP CSV file.")
+                print("Successfully fetched the",msg,"CSV file.")
             else:
-                print(f"Failed to fetch the UN WPP CSV file. Status code: {resp.status}")
+                print(f"Failed to fetch the {msg} CSV file. Status code: {resp.status}")
                 exit()
 
-            csv_filename = 'WPP2019_TotalPopulationBySex.csv'
             with open(csv_filename, 'wb') as f:
                 f.write(resp.data)
 
@@ -90,34 +88,10 @@ def download_if_nonexistent(wpp_url,csv_filename):
             exit()
         
 wpp_url = 'https://population.un.org/wpp2019/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv'
-download_if_nonexistent(wpp_url, 'WPP2019_TotalPopulationBySex.csv')
-
-def download_if_nonexistent2(continent_url,csv_filename):
-    if not os.path.isfile('continents-according-to-our-world-in-data.csv'):
-        try:
-            continent_url = 'https://ourworldindata.org/continents-according-to-our-world-in-data.csv'
-            resp = urllib3.request("GET", continent_url)
-
-            if resp.status == 200:
-                print(type(resp.status))
-                print("Successfully fetched the CONTINENT CSV file.")
-            else:
-                print(f"Failed to fetch the CONTINENT CSV file. Status code: {resp.status}")
-                exit()
-
-            csv_filename2 = 'continents-according-to-our-world-in-data.csv'
-            with open(csv_filename2, 'wb') as f2:
-                f2.write(resp.data)
-
-            print(f"CSV file '{csv_filename2}' saved successfully.")
-
-            time.sleep(1)
-        except Exception as e:
-            print(f"Error downloading '{csv_filename2}': {e}")
-            exit()
+download_if_nonexistent(wpp_url, 'WPP2019_TotalPopulationBySex.csv', "UN WPP")
 
 continents_url = 'https://ourworldindata.org/continents-according-to-our-world-in-data.csv'
-download_if_nonexistent2(continents_url, 'continents-according-to-our-world-in-data.csv')
+download_if_nonexistent(continents_url, 'continents-according-to-our-world-in-data.csv', "CONTINENT")
 
 populationdict = {} #keys: country_names; values: total_population
 continent_data = {}
@@ -198,36 +172,44 @@ try:
             })
     print("Extracted continent data from the CSV file.")
 
-    continent = input("Enter the continent you'd like to see the graph for (North America, South America, Oceania, Asia, Europe, Africa): ").strip()
-    if continent not in continent_data:
-        print(f"Continent '{continent}' not found in the data.")
-        exit()
-
-    contdata = continent_data[continent]
-    populations = [entry['population'] for entry in contdata]
-    emissions = [entry['emissions'] for entry in contdata]
-    countries = [entry['country'] for entry in contdata]
-
-    plt.figure(figsize=(14, 8))
-    plt.scatter(populations, emissions, alpha=0.5)
-    if populations and emissions:
-        m, b = np.polyfit(populations, emissions, 1)
-        plt.plot(populations, m * np.array(populations), color='red')
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.xlabel('Population')
-    plt.ylabel('Carbon Emissions (Mt)')
-    plt.title(f'Population vs Carbon Emissions ({continent})')
-    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
-    cursor = mplcursors.cursor(hover=True)
-    cursor.connect("add", lambda sel: sel.annotation.set_text(countries[int(sel.index)]))
-    plt.legend()
-    plt.savefig(f'carbonemissions_{continent}.png')
-    plt.show()
-
 except Exception as e:
     print(f"Error processing CSV file: {e}")
-    exit()
+
+continent = None
+while continent != "Q" and continent != "":
+    try:
+        continent = input("Enter the continent you'd like to see the graph for (North America, South America, Oceania, Asia, Europe, Africa), or Q to quit: ").strip()
+        if continent.upper() == "Q":
+            break
+        if continent not in continent_data:
+            print(f"Continent '{continent}' not found in the data.")
+            continue
+
+        contdata = continent_data[continent]
+        populations = [entry['population'] for entry in contdata]
+        emissions = [entry['emissions'] for entry in contdata]
+        countries = [entry['country'] for entry in contdata]
+
+        plt.figure(figsize=(14, 8))
+        plt.scatter(populations, emissions, alpha=0.5)
+        if populations and emissions:
+            m, b = np.polyfit(populations, emissions, 1)
+            plt.plot(populations, m * np.array(populations), color='red')
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel('Population')
+        plt.ylabel('Carbon Emissions (Mt)')
+        plt.title(f'Population vs Carbon Emissions ({continent})')
+        plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+        cursor = mplcursors.cursor(hover=True)
+        cursor.connect("add", lambda sel: sel.annotation.set_text(countries[int(sel.index)]))
+        plt.legend()
+        plt.savefig(f'carbonemissions_{continent}.png')
+        plt.show()
+
+    except Exception as e:
+        print(f"Error processing CSV file: {e}")
+        exit()
 
 emissions_per_capita_sorted = sorted(emissionspercapita.items(), key=lambda x: x[1][3], reverse=True)
 top_10_worst = emissions_per_capita_sorted[:10]
