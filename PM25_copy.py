@@ -57,7 +57,11 @@ with open("state_tier1_08feb2024_ktons.csv") as f:
     state_code_index = header.index("State FIPS")
     twentytwentythree_index = header.index("emissions2023")
     abbrev_index = header.index("State")
+    pollutant_index = header.index("Pollutant")
     for row in reader:
+        pollutant = row[pollutant_index]
+        if "PM25" not in pollutant:
+            continue
         state_code = int(row[state_code_index])
         state_abbrev = row[abbrev_index]
         abbrev[state_code] = state_abbrev
@@ -65,27 +69,30 @@ with open("state_tier1_08feb2024_ktons.csv") as f:
             emissions = float(row[twentytwentythree_index])
             pm25emissions[state_code] += emissions
         except ValueError as e:
-            print(f"Skipping row: {row}, Error: {e}")
+            #print(f"Skipping row: {row}, Error: {e}")
+            pass
 
 population = {}
 with open("populationsbystate.csv") as f:
     reader = csv.reader(f)
-    next(reader)
     header = next(reader)
     print(header)
     for row in reader:
-        state_code = row[0]
-        population[state_code] = int(row[2])
+        state_abbrev = row[0]
+        population[state_abbrev] = int(row[2])
 
-normalized_pm25_emissions = defaultdict(float)
-normalized_pm25_concentrations = defaultdict(float)
+normalized_pm25_emissions = defaultdict(float) #by population
+avg_pm25_concentrations = defaultdict(float) #averaging all monitoring stations
 
-for state_code in population:
-    if state_code in pm25emissions and state_code in pm25local:
-        emissions_per_capita = pm25emissions[state_code] / population[state_code]
-        concentrations_avg = np.mean(pm25local[state_code])
-        normalized_pm25_emissions[state_code] = emissions_per_capita
-        normalized_pm25_concentrations[state_code] = concentrations_avg / population[state_code]
+for state_code in pm25emissions: #keys: FIPS
+    if state_code in pm25local: #keys: FIPS
+        state_abbrev = abbrev[state_code]
+        if state_abbrev in population: #keys: two-letter abbreviations
+            print("For state_code",state_code)
+            emissions_per_capita = pm25emissions[state_code] / population[state_abbrev]
+            concentrations_avg = np.mean(pm25local[state_code])
+            normalized_pm25_emissions[state_code] = emissions_per_capita
+            avg_pm25_concentrations[state_code] = concentrations_avg
 
 #print(abbrev)
 
@@ -99,11 +106,10 @@ x_values = []
 y_values = []
 state_codes = []
 
-for state_code in pm25local.keys():
-    if state_code in pm25emissions:
-        x_values.append(pm25emissions[state_code])
-        avg_pm25 = np.mean(pm25local[state_code])
-        y_values.append(avg_pm25)
+for state_code in normalized_pm25_emissions.keys(): #For making lists out of dictionaries and keeping them collated.
+    if state_code in avg_pm25_concentrations:
+        x_values.append(normalized_pm25_emissions[state_code])
+        y_values.append(avg_pm25_concentrations[state_code])
         state_codes.append(state_code)
 
 try:
@@ -111,11 +117,11 @@ try:
     print(f"Correlation coefficient: {correlation_coef}")
 except ValueError as e:
     print(f"ValueError: {e}")
-    
+
 plt.figure(figsize=(8, 6))
 plt.scatter(x_values, y_values, alpha=0.5)
-plt.title('Correlation between PM2.5 Emissions and Average Observed PM2.5 Levels')
-plt.xlabel('PM2.5 Emissions')
+plt.title('Correlation between Normalized PM2.5 Emissions and Average Observed PM2.5 Levels')
+plt.xlabel('Normalized PM2.5 Emissions')
 plt.ylabel('Average Observed PM2.5 Levels')
 plt.grid(True)
 cursor = mplcursors.cursor(hover=True)
