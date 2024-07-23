@@ -119,6 +119,7 @@ except ValueError as e:
     print(f"ValueError: {e}")
 
 plt.figure(figsize=(8, 6))
+plt.xlim(0,max(x_values)*1.2)
 plt.scatter(x_values, y_values, alpha=0.5)
 plt.title('Correlation between Normalized PM2.5 Emissions and Average Observed PM2.5 Levels')
 plt.xlabel('Normalized PM2.5 Emissions')
